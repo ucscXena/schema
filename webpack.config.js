@@ -13,11 +13,7 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			{ test: /rx-dom/, loader: "imports?define=>false" },
-			{ test: /\.css$/, loader: "style!css" },
 			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime,cacheDirectory=cache'},
-			{ test: /\.haml$/, loader: 'haml-loader' },
-			{ test: /\.(jpe?g|png|gif|svg|eot|woff2?|ttf)$/i, loaders: ['url?limit=10000'] }
 		]
 	},
 	plugins: [
@@ -29,12 +25,6 @@ module.exports = {
 		new webpack.OldWatchingPlugin()
 	],
 	resolve: {
-		alias: {
-			rx$: 'rx/dist/rx',
-			'rx.binding$': 'rx/dist/rx.binding',
-			'rx.async$': 'rx/dist/rx.async',
-			'rx.coincidence$': 'rx/dist/rx.coincidence'
-		},
 		extensions: ['', '.js', '.json', '.coffee'],
 		root: __dirname + "/js"
 	}
