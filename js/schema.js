@@ -1,19 +1,32 @@
 /*global module: false, require: false */
 'use strict';
 var _ = require('underscore');
+var S;
 
-function key(v, k) {
-    return (k[0] === '/' && k[k.length - 1] === '/') ?
-        ['pattern', k.slice(1, k.length - 1), v] :
-        ['literal', k, v];
+// Allow literal shorthand for some schemas.
+function literals(value) {
+	if (_.isString(value)) {
+		return S.string(value);
+	}
+	if (_.isNumber(value)) {
+		return S.number(value);
+	}
+	return value;
 }
 
-var S = module.exports = function (obj) {
+// Identify pattern keys.
+function key(schema, k) {
+    return (k[0] === '/' && k[k.length - 1] === '/') ?
+        ['pattern', k.slice(1, k.length - 1), literals(schema)] :
+        ['literal', k, literals(schema)];
+}
+
+S = module.exports = function (obj) {
     return ['object', {}, ..._.map(obj, key)];
 };
 
 // merge, dropping undefined props
-var p = (...objs) => _.pick(_.extend.apply(null, objs), (v, k) => v !== undefined);
+var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), (v, k) => v !== undefined);
 
 // how to represent
 //   required (we really want to tag 'optional', not 'required')
@@ -28,11 +41,11 @@ var methods = {
             (_.isNumber(value) ? ['value', value] : []);
         return ['number', {}, val];
     },
-    or: function (...args) {
-        return ['or', {}, ...args];
+    or: function (...schemas) {
+        return ['or', {}, ..._.map(schemas, literals)];
     },
-    array: function (...args) {
-        return ['array', {}, ['fixed', ...args]];
+    array: function (...schemas) {
+        return ['array', {}, ['tuple', ..._.map(schemas, literals)]];
     },
     d: function (...args) {
         if (args.length === 2) {
@@ -40,13 +53,13 @@ var methods = {
         }
         var [title, description, [type, opts, ...rest]] = args;
         return [type,
-               p({title: title, description: description}, opts),
+               m({title: title, description: description}, opts),
                ...rest];
     },
 };
 
-methods.array.of = function (sch) {
-    return ['array', {}, ['pattern', sch]];
+methods.array.of = function (schema) {
+    return ['array', {}, ['list', literals(schema)]];
 };
 
 _.extend(S, methods);
