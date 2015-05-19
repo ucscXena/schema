@@ -4,7 +4,7 @@
   "description": "client project template",
   "main": "index.js",
   "scripts": {
-    "test": "webpack-dev-server --config webpack.test.js --port 8081",
+    "test": "webpack-dev-server --config webpack.test.js --devtool eval --port 8081",
     "lint": "eslint --no-color js/* test/*",
     "clean": "rimraf build/*",
     "start": "webpack-dev-server --devtool eval --progress --colors --history-api-fallback",
