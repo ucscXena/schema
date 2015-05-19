@@ -1,7 +1,7 @@
 {
-  "name": "client-template",
+  "name": "schema-shorthand",
   "version": "1.0.0",
-  "description": "client project template",
+  "description": "simple, fluent js api for creating schema",
   "main": "index.js",
   "scripts": {
     "test": "webpack-dev-server --config webpack.test.js --devtool eval --port 8081",
