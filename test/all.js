@@ -3,3 +3,4 @@
 require('./schema');
 //require('./xenaSchema');
 require('./jsonSchema');
+require('./html');
