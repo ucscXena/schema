@@ -1,4 +1,4 @@
-/*global require: false, module: false */
+/*global require: false, module: false, console: false */
 'use strict';
 var _ = require('underscore');
 
@@ -9,10 +9,14 @@ function cases([tag, ...data], c) {
 	return c[tag](...data);
 }
 
-function string(opts, sType) {
+function nullval(toHTML, opts) {
+	return '<span class="it">null</span>';
+}
+
+function string(toHTML, opts, sType) {
 	return cases(sType, {
-		'value': (value) => `"${value}"`,
-		'pattern': (pat) => `/${pat}/`,
+		'value': (value) => `<span class="nowrap">"${_.escape(value)}"</span>`,
+		'pattern': (pat) => `<span class="nowrap">${_.escape(pat)}</span>`,
 		undefined: () => '<span class="it">string</span>'
 	});
 }
@@ -25,7 +29,7 @@ function maxb(v) {
     return _.isUndefined(v) ? '&infin;' : v;
 }
 
-function number(opts, nType) {
+function number(toHTML, opts, nType) {
 	return cases(nType, {
 		'value': (value) => `${value}`,
 		'interval': ([min, max]) => `<span class="it">number [${minb(min)}, ${maxb(max)}]</span>`,
@@ -33,12 +37,10 @@ function number(opts, nType) {
 	});
 }
 
-var toHTML;
-
-function array(opts, aType) {
+function array(toHTML, opts, aType) {
 	return cases(aType, {
-		'tuple': (...schs) => `[${_.map(schs, toHTML).join(', ')}]`,
-		'list': (sch) => `[${toHTML(sch)}, ...]`
+		'tuple': (...schs) => `<span class="align-top">[</span>${_.map(schs, toHTML).join(', ')}]`,
+		'list': (sch) => `<span class="align-top">[</span>${toHTML(sch)}, ...]`
 	});
 }
 
@@ -53,37 +55,64 @@ function array(opts, aType) {
 //        `</div>\n`;
 //}
 
-var table = (className, ...children)  => `<table class='${className}'><tbody>${children.join('')}</tbody></table>`;
+var table = (className, ...children) => `<table class='${className}'><tbody>${children.join('')}</tbody></table>`;
 var row = (...children) => `<tr>${children.join('')}</tr>`;
 var td = (className, children) => `<td class=${className}>${children}</td>`;
-function  objRow(first, last, key, sch) {
+function objRow(toHTML, first, last, key, sch) {
     return row(
             td('obj-name', first ? '{' : ''),
-            td('obj-keys', `${key} :: `),
+            td('obj-keys', `${_.escape(key)} :`),
             td('obj-vals', toHTML(sch) + (last ? '}' : '')));
 }
 
-function object(opts, ...props) {
+function object(toHTML, opts, ...props) {
     return table('obj', ..._.map(props, ([t, key, sch], i) =>
-                objRow(i === 0, i === props.length - 1, key, sch)));
+                objRow(toHTML, i === 0, i === props.length - 1, key, sch)));
 }
 
-var or = (opts, ...schs) => _.map(schs, toHTML).join(' | ');
+var or = (toHTML, opts, ...schs) => `<p class="inline-block">${_.map(schs, toHTML).join(' | ')}</p>`;
 
-toHTML = function (sch) {
-	return cases(sch, {
-		'string': string,
-		'number': number,
-		'array': array,
-		'object': object,
-        'or': or
-	});
-};
+var partialAll = (o, ...args) => _.mapObject(o, f => _.partial(f, ...args));
+
+function toHTML(sch, top = []) {
+	var [, {title, description}] = sch,
+		h = (title ? `<h3>${title}</h3>` : '') +
+			(description ? `<p id="${title}">${description}</p>` : '');
+	function render(s) {
+		var [, {title}] = s;
+		if (sch === s || top.indexOf(s) === -1) {
+			return cases(s, partialAll({
+				'string': string,
+				'number': number,
+				'array': array,
+				'object': object,
+				'or': or,
+				'null': nullval
+			}, render));
+		} else {
+			if (!title) {
+				console.warn('Missing title for top-level sema');
+			}
+			return title ? `<a href="#${title}"><em>${title}</em></a>` : '';
+		}
+	}
+	return h + render(sch);
+}
 
 // How to handle padding with nested elements?
 // Only put padding on top-level elements?
 var css =
 `<style>
+	p {
+		max-width: 50em;
+		margin: 0;
+	}
+	.inline-block {
+		display: inline-block;
+	}
+	.nowrap {
+		white-space: nowrap;
+	}
     .it {
         font-style: italic;
     }
@@ -96,13 +125,20 @@ var css =
     }
     .obj-keys {
         vertical-align: top;
+        text-align: right;
     }
+	td.obj-keys {
+		padding-right: 0.5em;
+	}
     .obj-vals > * {
         vertical-align: bottom;
     }
-    .obj-keys {
-        text-align: right;
-    }
+	.obj-vals > .align-top {
+		vertical-align: top;
+	}
+	.obj-name {
+		vertical-align: top;
+	}
     .obj-desc {
         margin-top: 0;
         margin-left: 8em;
