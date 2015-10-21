@@ -1,6 +1,7 @@
 {
   "parser": "babel-eslint",
   "rules": {
+    "no-shadow": [0],
     "global-strict": false,
     "strict": [2, "global"],
     "no-console": 0,
