@@ -26,7 +26,7 @@ S = module.exports = function (obj) {
 };
 
 // merge, dropping undefined props
-var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), (v, k) => v !== undefined);
+var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), v => v !== undefined);
 
 // how to represent
 //   required (we really want to tag 'optional', not 'required')
@@ -37,7 +37,7 @@ var methods = {
         return ['string', {}, val];
     },
     number: function (value) {
-        var val = _.isArray(value) ?  ['interval', value] :
+        var val = _.isArray(value) ? ['interval', value] :
             (_.isNumber(value) ? ['value', value] : []);
         return ['number', {}, val];
     },
