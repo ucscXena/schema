@@ -56,6 +56,7 @@ var methods = {
                m({title: title, description: description}, opts),
                ...rest];
     },
+	nullval: ['null', {}]
 };
 
 methods.array.of = function (schema) {
