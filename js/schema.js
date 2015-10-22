@@ -1,4 +1,5 @@
 /*global module: false, require: false */
+/*eslint new-cap: [0] */
 'use strict';
 var _ = require('underscore');
 var S;
@@ -10,6 +11,9 @@ function literals(value) {
 	}
 	if (_.isNumber(value)) {
 		return S.number(value);
+	}
+	if (_.isObject(value) && !_.isArray(value) && !_.isFunction(value)) {
+		return S(value);
 	}
 	return value;
 }
