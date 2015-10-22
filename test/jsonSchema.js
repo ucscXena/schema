@@ -16,6 +16,6 @@ describe('jsonSchema', function () {
 	describe('#toJSON', function () {
 		it('should return a JSON schema', function () {
 			var s = toJSON(cols);
-			assert(_.isObject(s));});
+			assert(_.isObject(s)); });
 	});
 });

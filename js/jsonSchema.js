@@ -3,7 +3,7 @@
 var _ = require('underscore');
 
 // merge, dropping undefined props
-var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), (v, k) => v !== undefined);
+var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), v => v !== undefined);
 
 function cases([tag, ...data], c) {
 	return c[tag](...data);
@@ -38,12 +38,12 @@ function object(opts, ...props) {
 	var {pattern, literal} = _.groupBy(props, _.first);
 	return {
 		type: 'object',
-		properties: _.object(_.map(literal, ([t, key, sch]) => [key, toJSON(sch)])),
-		patternProperties: _.object(_.map(pattern, ([t, pat, sch]) => [pat, toJSON(sch)]))
+		properties: _.object(_.map(literal, ([, key, sch]) => [key, toJSON(sch)])),
+		patternProperties: _.object(_.map(pattern, ([, pat, sch]) => [pat, toJSON(sch)]))
 	};
 }
 
-var or = (opts, ...schs) => ({anyOf: _.map(schs, toJSON)}); 
+var or = (opts, ...schs) => ({anyOf: _.map(schs, toJSON)});
 
 var mergeCommon = (fn) => (opts, ...data) => m(opts, fn(opts, ...data));
 
