@@ -55,13 +55,21 @@ function array(toHTML, opts, aType) {
 //        `</div>\n`;
 //}
 
+function linkKey (k) {
+	var id = k.slice(1, k.length - 1);
+	console.log(k, id);
+	return `<a class="it" href="#${id}">${id}</a>`;
+}
+
+var isLink = k => k[0] === '<';
+
 var table = (className, ...children) => `<table class='${className}'><tbody>${children.join('')}</tbody></table>`;
 var row = (...children) => `<tr>${children.join('')}</tr>`;
 var td = (className, children) => `<td class=${className}>${children}</td>`;
 function objRow(toHTML, first, last, key, sch) {
     return row(
             td('obj-name', first ? '{' : ''),
-            td('obj-keys', `${_.escape(key)} :`),
+            td('obj-keys', `${isLink(key) ? linkKey(key) : _.escape(key)} :`),
             td('obj-vals', toHTML(sch) + (last ? '}' : '')));
 }
 
