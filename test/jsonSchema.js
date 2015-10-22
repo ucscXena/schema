@@ -8,14 +8,12 @@ var assert = require('assert');
 var _ = require('underscore');
 
 var {toJSON} = require('../js/jsonSchema');
-var cols = require('../schema').Columns;
-
-//console.log(JSON.stringify(toJSON(cols), null, 4));
+var col = require('../js/demo-schema').Column;
 
 describe('jsonSchema', function () {
 	describe('#toJSON', function () {
 		it('should return a JSON schema', function () {
-			var s = toJSON(cols);
+			var s = toJSON(col);
 			assert(_.isObject(s)); });
 	});
 });
