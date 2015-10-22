@@ -9,7 +9,7 @@ function cases([tag, ...data], c) {
 	return c[tag](...data);
 }
 
-function nullval(toHTML, opts) {
+function nullval() {
 	return '<span class="it">null</span>';
 }
 
