@@ -7,6 +7,11 @@ var {d, string, array, number, or, nullval} = S;
 var dsID = d('dsID', 'JSON encoded host and dataset id',
 			string(/{"host":".*","name":".*"}/));
 
+var ColumnID = d(
+	'ColumnID', 'UUID for identifying columns',
+	string(/[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/)
+);
+
 var Column = d(
 	'Column', 'A column for display', S({
 	dsID: dsID,
@@ -31,7 +36,7 @@ var Column = d(
 
 var Columns = d(
 	'Columns', 'A set of columns', S({
-		'/[-0-9a-f]+/': Column
+		'<ColumnID>': Column
 	}));
 
 //var Cohorts = d(
@@ -144,10 +149,10 @@ var Application = d(
 	S({
 		cohort: string(),
 		cohorts: array.of(string()),
-		columnOrder: array.of(string(/[-0-9a-f]+/)),
+		columnOrder: array.of(ColumnID),
 		columns: Columns,
 		data: {
-			'/[-0-9a-f]+/': or(ProbeData, MutationData)
+			'<ColumnID>': or(ProbeData, MutationData)
 		},
 		datasets: {
 			datasets: {
@@ -159,7 +164,7 @@ var Application = d(
 			})
 		},
 		features: {
-			'/{"host":<url>,"name":<path>}/': Feature
+			'<dsID>': Feature
 		},
 		km: {
 			vars: {
@@ -178,6 +183,15 @@ var Application = d(
 			count: number([0]),
 			height: number([0]),
 			index: number([0])
+		},
+		vizSettings: {
+			'<dsID>': {
+				max: number(),
+				maxStart: or(number(), nullval),
+				minStart: or(number(), nullval),
+				min: number(),
+				colNormalization: or('boolean', nullval) // XXX need boolean type
+			}
 		}
 	})
 );
@@ -273,6 +287,7 @@ module.exports = {
 	Feature: Feature,
 	FeatureID: FeatureID,
 	SampleID: SampleID,
+	ColumnID: ColumnID,
 	ProbeData: ProbeData,
 	MutationData: MutationData,
 	Application: Application
