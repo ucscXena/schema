@@ -57,7 +57,6 @@ function array(toHTML, opts, aType) {
 
 function linkKey (k) {
 	var id = k.slice(1, k.length - 1);
-	console.log(k, id);
 	return `<a class="it" href="#${id}">${id}</a>`;
 }
 
