@@ -84,8 +84,8 @@ var partialAll = (o, ...args) => _.mapObject(o, f => _.partial(f, ...args));
 
 function toHTML(sch, top = []) {
 	var [, {title, description}] = sch,
-		h = (title ? `<h3>${title}</h3>` : '') +
-			(description ? `<p id="${title}">${description}</p>` : '');
+		h = (title ? `<h3 id="${title}"}>${title}</h3>` : '') +
+			(description ? `<p class='subtitle'>${description}</p>` : '');
 	function render(s) {
 		var [, {title}] = s;
 		if (sch === s || top.indexOf(s) === -1) {
@@ -124,6 +124,10 @@ var css =
     .it {
         font-style: italic;
     }
+	.subtitle {
+		margin-top: -1em;
+		margin-bottom: 1em;
+	}
     .obj {
         display: inline-block;
     }
