@@ -2,7 +2,7 @@
 /*eslint new-cap: [0] */
 'use strict';
 var S = require('./schema');
-var {d, string, array, number, or, nullval} = S;
+var {d, string, array, number, or, nullval, boolean} = S;
 
 var dsID = d('dsID', 'JSON encoded host and dataset id',
 			string(/{"host":".*","name":".*"}/));
@@ -78,7 +78,7 @@ var Dataset = d(
 		dataproducer: string(),
 		datasubtype: 'not sure why this is here',
 		description: string(),
-		dsID: '{"host":<url>,"name":<path>}',
+		dsID: dsID,
 		label: string(),
 		name: string(),
 		probemap: or(string(), nullval),
@@ -93,10 +93,15 @@ var Dataset = d(
 	})
 );
 
+var FeatureName = d(
+	'FeatureName', 'Name of a feature. Should be unique in the dataset.',
+	string()
+);
+
 var Feature = d(
 	'Feature', 'Phenotype metdata',
 	S({
-		'/.*/': {
+		'<FeatureName>': {
 			// XXX why field_id?
 			field_id: number(), // eslint-disable-line camelcase
 			id: number(), // XXX why?
@@ -114,7 +119,7 @@ var FeatureID = d(
 	'FeatureID', 'Primary key for a feature',
 	S({
 		dsID: dsID,
-		name: string()
+		name: FeatureName
 	}));
 
 var SampleID = d(
@@ -122,11 +127,16 @@ var SampleID = d(
 	string()
 );
 
+var HeatmapData = d(
+	'HeatmapData', 'Matrix of values for heatmap display, ordered by field and sample.',
+	array.of(array.of(number()))
+);
+
 var ProbeData = d(
 	'ProbeData', 'Data for a probe column',
 	S({
 		metadata: Dataset, // XXX why is this here?
-		req: S({
+		req: {
 			mean: {
 				'<GeneOrProbe>': number()
 			},
@@ -135,8 +145,9 @@ var ProbeData = d(
 				'<GeneOrProbe>': {
 					'<SampleID>': number() // or null? or NaN?
 				}
-			}
-		})
+			},
+			display: HeatmapData
+		}
 	}));
 
 var MutationData = d(
@@ -144,6 +155,17 @@ var MutationData = d(
 	S({
 	})
 );
+var VizSettings = d(
+	'VizSettings', 'User settings for visualization',
+	S({
+		max: number(),
+		maxStart: or(number(), nullval),
+		minStart: or(number(), nullval),
+		min: number(),
+		colNormalization: or(boolean, nullval)
+	})
+);
+
 var Application = d(
 	'Application', 'The application state',
 	S({
@@ -184,15 +206,7 @@ var Application = d(
 			height: number([0]),
 			index: number([0])
 		},
-		vizSettings: {
-			'<dsID>': {
-				max: number(),
-				maxStart: or(number(), nullval),
-				minStart: or(number(), nullval),
-				min: number(),
-				colNormalization: or('boolean', nullval) // XXX need boolean type
-			}
-		}
+		vizSettings: VizSettings
 	})
 );
 //
@@ -286,9 +300,12 @@ module.exports = {
 	Dataset: Dataset,
 	Feature: Feature,
 	FeatureID: FeatureID,
+	FeatureName: FeatureName,
 	SampleID: SampleID,
 	ColumnID: ColumnID,
+	HeatmapData: HeatmapData,
 	ProbeData: ProbeData,
 	MutationData: MutationData,
+	VizSettings: VizSettings,
 	Application: Application
 };
