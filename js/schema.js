@@ -60,6 +60,7 @@ var methods = {
                m({title: title, description: description}, opts),
                ...rest];
     },
+	boolean: ['boolean', {}],
 	nullval: ['null', {}]
 };
 

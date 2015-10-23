@@ -13,6 +13,10 @@ function nullval() {
 	return '<span class="it">null</span>';
 }
 
+function boolean() {
+	return '<span class="it">boolean</span>';
+}
+
 function string(toHTML, opts, sType) {
 	return cases(sType, {
 		'value': (value) => `<span class="nowrap">"${_.escape(value)}"</span>`,
@@ -94,7 +98,8 @@ function toHTML(sch, top = []) {
 				'array': array,
 				'object': object,
 				'or': or,
-				'null': nullval
+				'null': nullval,
+				'boolean': boolean
 			}, render));
 		} else {
 			if (!title) {
