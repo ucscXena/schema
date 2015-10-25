@@ -1,8 +1,9 @@
 {
   "name": "schema-shorthand",
   "version": "1.0.0",
-  "description": "simple, fluent js api for creating schema",
+  "description": "simple, fluent js api for documenting schema",
   "main": "index.js",
+  "files": ["NOTICE", "dist"],
   "scripts": {
     "test": "webpack-dev-server --config webpack.test.js --devtool eval --port 8081",
     "lint": "eslint --no-color js/* test/*",
@@ -10,7 +11,8 @@
     "start": "webpack-dev-server --devtool eval --progress --colors --history-api-fallback",
     "build": "webpack",
     "build:prod": "npm run build -- --config webpack.prod.js --devtool source-map",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "prepublish": "babel js -d dist"
   },
   "author": "Brian Craft",
   "devDependencies": {
