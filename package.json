@@ -1,6 +1,6 @@
 {
   "name": "schema-shorthand",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "simple, fluent js api for documenting schema",
   "main": "index.js",
   "files": ["NOTICE", "dist"],
