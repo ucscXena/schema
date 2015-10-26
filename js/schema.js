@@ -61,7 +61,8 @@ var methods = {
                ...rest];
     },
 	boolean: ['boolean', {}],
-	nullval: ['null', {}]
+	nullval: ['null', {}],
+	object: S
 };
 
 methods.array.of = function (schema) {

@@ -2,7 +2,7 @@
 /*eslint new-cap: [0] */
 'use strict';
 var S = require('./schema');
-var {d, string, array, number, or, nullval, boolean} = S;
+var {d, string, array, number, or, nullval, boolean, object} = S;
 
 var dsID = d('dsID', 'JSON encoded host and dataset id',
 			string(/{"host":".*","name":".*"}/));
@@ -157,7 +157,8 @@ var MutationData = d(
 );
 var VizSettings = d(
 	'VizSettings', 'User settings for visualization',
-	S({
+	// object() same as S()
+	object({
 		max: number(),
 		maxStart: or(number(), nullval),
 		minStart: or(number(), nullval),
