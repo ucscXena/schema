@@ -2,7 +2,7 @@
 /*eslint new-cap: [0] */
 'use strict';
 var S = require('./schema');
-var {d, string, array, number, or, nullval, boolean, object} = S;
+var {d, string, array, number, or, nullval, boolean, object, r} = S;
 
 var dsID = d('dsID', 'JSON encoded host and dataset id',
 			string(/{"host":".*","name":".*"}/));
@@ -127,9 +127,22 @@ var SampleID = d(
 	string()
 );
 
+var ColorSpec = d(
+	'ColorSpec', 'A color scale variant.',
+	or(
+		array('float-pos', r('low', number()), r('high', number()), r('min', number()), r('max', number())),
+		array('float-neg', r('low', number()), r('high', number()), r('min', number()), r('max', number())),
+		array('float', number(), number(), number(), number(), number()),
+		array('float-thresh-pos', number(), number(), number(), number(), number()),
+		array('float-thresh-neg', number(), number(), number(), number(), number()),
+		array('float-thresh', number(), number(), number(), number(), number(), number(), number()),
+		array('ordinal', number([0]))
+	)
+);
+
 var HeatmapData = d(
 	'HeatmapData', 'Matrix of values for heatmap display, ordered by field and sample.',
-	array.of(array.of(number()))
+	array.of(r('field', array.of(r('sample', number()))))
 );
 
 var ProbeData = d(
@@ -305,6 +318,7 @@ module.exports = {
 	SampleID: SampleID,
 	ColumnID: ColumnID,
 	HeatmapData: HeatmapData,
+	ColorSpec: ColorSpec,
 	ProbeData: ProbeData,
 	MutationData: MutationData,
 	VizSettings: VizSettings,

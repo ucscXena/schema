@@ -41,10 +41,18 @@ function number(toHTML, opts, nType) {
 	});
 }
 
+function role(toHTML, schema) {
+	// eslint is flagging role is as unused?? an eslint bug?
+	var [, {role}] = schema, //eslint-disable-line no-unused-vars
+		html = toHTML(schema);
+	return role ? `<span>${html} <label class='role'>${_.escape(role)}</label></span>` : html;
+}
+
 function array(toHTML, opts, aType) {
+	var r = _.partial(role, toHTML);
 	return cases(aType, {
-		'tuple': (...schs) => `<span class="align-top">[</span>${_.map(schs, toHTML).join(', ')}]`,
-		'list': (sch) => `<span class="align-top">[</span>${toHTML(sch)}, ...]`
+		'tuple': (...schs) => `<span class="align-top">[</span>${_.map(schs, r).join(', ')}]`,
+		'list': (sch) => `<span class="align-top">[</span>${r(sch)}, ...]`
 	});
 }
 
@@ -162,6 +170,13 @@ var css =
         background-color: #F0F0F0;
         padding: 0.5em;
     }
+	.role {
+		border-radius: 3px;
+		padding: 0px 2px 0px 2px;
+		color: white;
+		background-color: gray;
+		font-size: 90%;
+	}
 </style>\n`;
 
 module.exports = {

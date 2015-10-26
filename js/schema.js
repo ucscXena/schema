@@ -51,7 +51,7 @@ var methods = {
     array: function (...schemas) {
         return ['array', {}, ['tuple', ..._.map(schemas, literals)]];
     },
-    d: function (...args) {
+    d: function (...args) { // d for 'document'
         if (args.length === 2) {
             args.unshift(undefined);
         }
@@ -60,6 +60,9 @@ var methods = {
                m({title: title, description: description}, opts),
                ...rest];
     },
+	r: function (role, [type, opts, ...rest]) { // r for 'role'
+		return [type, {role: role, ...opts}, ...rest];
+	},
 	boolean: ['boolean', {}],
 	nullval: ['null', {}],
 	object: S
