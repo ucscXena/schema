@@ -56,36 +56,35 @@ function array(toHTML, opts, aType) {
 	});
 }
 
-// The goal here is to vertically align the :: which appears between keys and their
-// values, while keeping the open brace left of all the keys. Do this by creating
-// three inline blocks (open brace, keys, values), and setting nowrap on the container.
-//function object(opts, ...props) {
-//    return `<div class='obj'>` +
-//        `<div class='obj-name'>{</div>\n` +
-//        `<div class='obj-keys'>${_.map(props, ([t, key]) => `${key} ::`).join('<br>')}</div>\n` +
-//        `<div class='obj-vals'>${_.map(props, ([t, k, sch]) => `${toHTML(sch)}`).join(',<br>')}}</div>\n` +
-//        `</div>\n`;
-//}
-
-function linkKey (k) {
-	var id = k.slice(1, k.length - 1);
+function linkKey (id) {
 	return `<a class="it" href="#${id}">${id}</a>`;
 }
 
-var isLink = k => k[0] === '<';
+function stringKey(type) {
+	return cases(type, {
+		'value': (value) => value,
+		'pattern': (pat) => pat,
+		undefined: () => '/.*/'
+	});
+}
+
+
+// The goal here is to vertically align the ':' which appears between keys and their
+// values, while keeping the open brace left of all the keys. Do this by creating
+// three inline blocks (open brace, keys, values), and setting nowrap on the container.
 
 var table = (className, ...children) => `<table class='${className}'><tbody>${children.join('')}</tbody></table>`;
 var row = (...children) => `<tr>${children.join('')}</tr>`;
 var td = (className, children) => `<td class=${className}>${children}</td>`;
-function objRow(toHTML, first, last, key, sch) {
+function objRow(toHTML, first, last, [, {title}, stringSchema], sch) {
     return row(
             td('obj-name', first ? '{' : ''),
-            td('obj-keys', `${isLink(key) ? linkKey(key) : _.escape(key)} :`),
+            td('obj-keys', `${title ? linkKey(title) : _.escape(stringKey(stringSchema))} :`),
             td('obj-vals', toHTML(sch) + (last ? '}' : '')));
 }
 
 function object(toHTML, opts, ...props) {
-    return table('obj', ..._.map(props, ([t, key, sch], i) =>
+    return table('obj', ..._.map(props, ([key, sch], i) =>
                 objRow(toHTML, i === 0, i === props.length - 1, key, sch)));
 }
 
@@ -111,7 +110,7 @@ function toHTML(sch, top = []) {
 			}, render));
 		} else {
 			if (!title) {
-				console.warn('Missing title for top-level sema');
+				console.warn('Missing title for top-level schema');
 			}
 			return title ? `<a href="#${title}"><em>${title}</em></a>` : '';
 		}
@@ -173,8 +172,7 @@ var css =
 	.role {
 		border-radius: 3px;
 		padding: 0px 2px 0px 2px;
-		color: white;
-		background-color: gray;
+		background-color: #ECECEC;
 		font-size: 90%;
 	}
 </style>\n`;

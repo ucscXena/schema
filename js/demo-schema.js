@@ -35,9 +35,9 @@ var Column = d(
 
 
 var Columns = d(
-	'Columns', 'A set of columns', S({
-		'<ColumnID>': Column
-	}));
+	'Columns', 'A set of columns', object(
+		ColumnID, Column
+	));
 
 //var Cohorts = d(
 //	'Cohorts', 'A set of cohorts', array.of(string())
@@ -100,8 +100,8 @@ var FeatureName = d(
 
 var Feature = d(
 	'Feature', 'Phenotype metdata',
-	S({
-		'<FeatureName>': {
+	S(
+		FeatureName, {
 			// XXX why field_id?
 			field_id: number(), // eslint-disable-line camelcase
 			id: number(), // XXX why?
@@ -112,7 +112,7 @@ var Feature = d(
 			valuetype: or('category', 'float'),
 			visibility: or('off', 'on', nullval)
 		}
-	})
+	)
 );
 
 var FeatureID = d(
@@ -130,6 +130,7 @@ var SampleID = d(
 var ColorSpec = d(
 	'ColorSpec', 'A color scale variant.',
 	or(
+		// XXX this syntax is more verbose than I like
 		array('float-pos', r('low', number()), r('high', number()), r('min', number()), r('max', number())),
 		array('float-neg', r('low', number()), r('high', number()), r('min', number()), r('max', number())),
 		array('float', number(), number(), number(), number(), number()),
@@ -145,18 +146,22 @@ var HeatmapData = d(
 	array.of(r('field', array.of(r('sample', number()))))
 );
 
+var Gene = d('Gene', 'A gene name', string());
+var Probe = d('Probe', 'A probe name', string());
+var GeneOrProbe = d('GeneOrProbe', 'A gene or probe name', or(Gene, Probe));
+
 var ProbeData = d(
 	'ProbeData', 'Data for a probe column',
 	S({
 		metadata: Dataset, // XXX why is this here?
 		req: {
 			mean: {
-				'<GeneOrProbe>': number()
+				[GeneOrProbe]: number()
 			},
 			probes: array.of(string()),
 			values: {
-				'<GeneOrProbe>': {
-					'<SampleID>': number() // or null? or NaN?
+				[GeneOrProbe]: {
+					[SampleID]: number() // or null? or NaN?
 				}
 			},
 			display: HeatmapData
@@ -187,21 +192,21 @@ var Application = d(
 		cohorts: array.of(string()),
 		columnOrder: array.of(ColumnID),
 		columns: Columns,
-		data: {
-			'<ColumnID>': or(ProbeData, MutationData)
-		},
+		data: object(
+			ColumnID, or(ProbeData, MutationData)
+		),
 		datasets: {
-			datasets: {
-				'<dsID>': Dataset
-			},
+			datasets: object(
+				dsID, Dataset
+			),
 			servers: array.of({
 				server: string(),
 				datasets: array.of(Dataset)
 			})
 		},
-		features: {
-			'<dsID>': Feature
-		},
+		features: object(
+			dsID, Feature
+		),
 		km: {
 			vars: {
 				event: FeatureID,
@@ -225,9 +230,6 @@ var Application = d(
 );
 //
 //
-var Gene = d('Gene', 'A gene name', string());
-var Probe = d('Probe', 'A probe name', string());
-var GeneOrProbe = d('GeneOrProbe', 'A gene or probe name', or(Gene, Probe));
 //var BasePos = d('base position', number([0]));
 var Chrom = d('Chrom', 'chrom', string(/chr[0-9]+/));
 
@@ -322,5 +324,8 @@ module.exports = {
 	ProbeData: ProbeData,
 	MutationData: MutationData,
 	VizSettings: VizSettings,
-	Application: Application
+	Application: Application,
+	Foo: d('foo', 'foo', object({
+		'/foo/': array.of(number())
+	}))
 };
