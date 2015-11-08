@@ -23,7 +23,7 @@ var Column = d(
 		'geneProbeMatrix',
 		'clinicalMatrix'
 	),
-	fields: array.of(string()),
+	fields: [string()],
 	fieldLabel: {
 		user: string(),
 		default: string()
@@ -131,7 +131,7 @@ var ColorSpec = d(
 	'ColorSpec', 'A color scale variant.',
 	or(
 		// XXX this syntax is more verbose than I like
-		array('float-pos', r('low', number()), r('high', number()), r('min', number()), r('max', number())),
+		['float-pos', r('low', number()), r('high', number()), r('min', number()), r('max', number())],
 		array('float-neg', r('low', number()), r('high', number()), r('min', number()), r('max', number())),
 		array('float', number(), number(), number(), number(), number()),
 		array('float-thresh-pos', number(), number(), number(), number(), number()),

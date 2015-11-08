@@ -4,18 +4,42 @@
 var _ = require('underscore');
 var S;
 
+// Schemas are represented as variants, using js arrays.  To allow using
+// literals as a shorthand for array schemas, we need to distinguish them from
+// the variants. Subclassing array in js is a mess, so instead use a hacky
+// magic property to identify variants.
+var schemaMagic = '_schema';
+
+function isSchema(value) {
+	return _.isArray(value) && value[schemaMagic];
+}
+
+function bless(schema) {
+	schema[schemaMagic] = true;
+	return schema;
+}
+
+var blessFn = fn => (...args) => bless(fn(...args));
+var blessAll = obj => _.mapObject(obj, v => _.isFunction(v) ? blessFn(v): bless(v));
+
 // Allow literal shorthand for some schemas.
 function literals(value) {
+	if (isSchema(value)) {
+		return value;
+	}
 	if (_.isString(value)) {
 		return S.string(value);
 	}
 	if (_.isNumber(value)) {
 		return S.number(value);
 	}
+	if (_.isArray(value)) {
+		return (value.length === 1) ? S.array.of(value[0]) : S.array(...value);
+	}
 	if (_.isObject(value) && !_.isArray(value) && !_.isFunction(value)) {
 		return S(value);
 	}
-	return value;
+	throw new Error(`Unknown schema value ${value}`);
 }
 
 ///////////////////////////////////////////
@@ -97,7 +121,7 @@ S = module.exports = function (...args) {
 var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), v => v !== undefined);
 
 // how to represent 'required' (we really want to tag 'optional', not 'required')
-var methods = {
+var methods = blessAll({
     string: function (value) {
         var val = _.isString(value) ? ['value', value] :
             (_.isRegExp(value) ? ['pattern', value] : []);
@@ -130,10 +154,10 @@ var methods = {
 	boolean: ['boolean', {}],
 	nullval: ['null', {}],
 	object: S
-};
+});
 
-methods.array.of = function (schema) {
-    return ['array', {}, ['list', literals(schema)]];
-};
+methods.array.of = blessFn(function (schema) {
+	return ['array', {}, ['list', literals(schema)]];
+});
 
 _.extend(S, methods);
