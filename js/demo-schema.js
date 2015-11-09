@@ -39,14 +39,6 @@ var Columns = d(
 		[ColumnID]: Column
 	}));
 
-//var Cohorts = d(
-//	'Cohorts', 'A set of cohorts', array.of(string())
-//);
-//
-//var ColumnOrder = d(
-//	array.of('/[-0-9a-f]+/')
-//);
-
 var DataSubType = or(
 	'copy number (gene-level)',
 	'somatic non-silent mutation (gene-level)',
@@ -228,87 +220,13 @@ var Application = d(
 		vizSettings: VizSettings
 	})
 );
-//
-//
-//var BasePos = d('base position', number([0]));
+
 var Chrom = d('Chrom', 'chrom', string(/chr[0-9]+/));
 
-// Where does 'description' live? On parameter, or on schema? If both, does d() overwrite
-// the one on the schema?
-
-// This describes user intent. Currently, we have only 'fields', which can be probes or genes.
-// clinicalMatrix [field]
-// mutationVector [field]
-// probeMatrix [field...]
-// geneProbeMatrix [field]
-// geneMatrix [field...]  <-- can be converted to geneProbeMatrix if length 1
-// field has type probe if type in [clinicalMatrix, probeMatrix]
-// field has type gene if type in [mutationVector, geneProbeMatrix, geneMatrix]
-//
-// The widget can interpret this, e.g. probes in gene, exons in gene.
-//
-// If the widget can interpret this in different ways (gene, probes in gene, exons), it has to inform the annotation tracks
-// somehow. Who defines the layout? The widget? The annotation? Or something above the two, that combines data type,
-// user intent, and widgets? Why would you write it one way (widget defines the layout) vs. another (separate module
-// defines the layout)? I really don't want the annotation to be holding a reference to the widget. So, need
-// a layout separate from that.
-//
-// We could use different data types for field vs array of field. That would allow a widget to register
-// for just field, not array of field. otoh, we will likely need widgets to display 'unsupported' messages
-// even with this refinement, because all combinations will not be supportable by every widget.
-//
-// The first thing I will want to do is register widgets based on 1 vs many. So, seems useful to use a data tag. An
-// alternative is to dispatch on fields lengths.
-//
-//var GenomicPosition = d(
-//	'GenomicPosition', 'genomic position (intent)',
-//	or(
-//		array('probes', array.of(Probe)),
-//		array('gene', array.of(Gene)),
-//		array('exons', Gene),
-//		array('chrom', Chrom, d('start', BasePos), d('end', BasePos))
-//	)
-//);
-
-// Types of layouts
-// genes, equally spaced
-// gene, exon view
-// gene, chrom view
-// probes, equally spaced
-// genes, proportional ?
-// probes, proportional ?
-
-// Should position variant identify the type of the fields? Or the type and the layout? Or should layout be separate?
-// gene vs exons => variant identifies layout.
-// ['genes', 'fixed']
-// ['genes', 'exon']  // only one
-// ['genes', 'chrom'] // only one
-// ['probes', 'fixed']
-// ['probes',
-// Note that a multimethod could dispatch on an array.
-
-// ChromPosition is internally converted to an array of (start, end)
-//var ChromIntervals = d(
-//	'chrom intervals', {
-//		chrom: string(),
-//		intervals: array.of(
-//			array(BasePos, BasePos)
-//		)
-//	}
-//);
-//
-//var PixelPos = d('pixel offset', number([0]));
-
-//var Partition = array.of(array(PixelPos, PixelPos));
-
-//var ChromLayout = S({
-//    intervals: ChromIntervals,
-//    partition: Partition});
 
 module.exports = {
 	dsID: dsID,
 	Column: Column,
-//	GenomicPosition: GenomicPosition,
 	Gene: Gene,
 	Probe: Probe,
 	GeneOrProbe: GeneOrProbe,
