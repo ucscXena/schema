@@ -76,8 +76,8 @@ object({
 ```
 
 The rules of inference are
-- Strings are fixed string values: 'foo' === string('foo')
-- Numbers are fixed number values: 12 === number(12)
+- Strings are fixed string values: 'foo' becomes string('foo')
+- Numbers are fixed number values: 12 becomes number(12)
 - Objects are dictionaries if they have one (presumably pattern) property, and are normal objects otherwise.
 - Arrays are tuples if they contain multiple schemas, lists if they contain one.
 
