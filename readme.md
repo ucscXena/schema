@@ -229,13 +229,13 @@ S([number()]);
 // An array containing multiple schemas is interpted as a tuple of those types.
 S([string(), number([10, 20])]);
 
-// If you require an array of length one, use the ```array``` method.
+// If you require an array of length one, use the array method.
 
-array([number()]);
+array(number());
 
 // A list can also be declared with array.of
 
-array.of([string()]);
+array.of(string());
 ```
 
 ## unions
@@ -286,11 +286,11 @@ var rect = S([r('x', number()), r('y', number()), r('dx', number()), r('dy', num
 The ```r``` method is non-mutating, so you can assign roles to schemas without affecting their
 definition.
 
-```
+```javascript
 var name = d('name', 'A name', string());
 
 var person = S([r('first name', name), r('last name', name)]);
-
+```
 The ```r``` syntax is more verbose than I would like.
 
 ### Lint
