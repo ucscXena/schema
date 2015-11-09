@@ -37,7 +37,7 @@ function literals(value) {
 		return (value.length === 1) ? S.array.of(value[0]) : S.array(...value);
 	}
 	if (_.isObject(value) && !_.isArray(value) && !_.isFunction(value)) {
-		return S(value);
+		return Object.keys(value).length === 1 ? S.object.of(value) : S(value);
 	}
 	throw new Error(`Unknown schema value ${value}`);
 }
@@ -109,13 +109,11 @@ function partitionN(coll, n) {
 // In the latter case, the key might be another schema. This is useful in the case
 // where the key is defined by a schema object, however in javascript that schema
 // object must be a string.
-S = module.exports = function (...args) {
-	if (args.length === 1) {
-		return ['object', {}, ..._.map(args[0], key)];
-	} else {
-		return ['object', {}, ...partitionN(args, 2).map(schs => schs.map(literals))];
-	}
-};
+var objargs = (type, args) => args.length === 1 ?
+	[type, {}, ..._.map(args[0], key)] :
+	[type, {}, ...partitionN(args, 2).map(schs => schs.map(literals))];
+
+S = module.exports = (...args) => objargs('object', args);
 
 // merge, dropping undefined props
 var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), v => v !== undefined);
@@ -151,6 +149,7 @@ var methods = blessAll({
 	r: function (role, [type, opts, ...rest]) { // r for 'role'
 		return [type, {role: role, ...opts}, ...rest];
 	},
+	dict: (...args) => objargs('dict', args),
 	boolean: ['boolean', {}],
 	nullval: ['null', {}],
 	object: S
@@ -159,5 +158,7 @@ var methods = blessAll({
 methods.array.of = blessFn(function (schema) {
 	return ['array', {}, ['list', literals(schema)]];
 });
+
+methods.object.of = methods.dict;
 
 _.extend(S, methods);

@@ -2,7 +2,7 @@
 /*eslint new-cap: [0] */
 'use strict';
 var S = require('./schema');
-var {d, string, array, number, or, nullval, boolean, object, r} = S;
+var {d, string, array, number, or, nullval, boolean, object, dict, r} = S;
 
 var dsID = d('dsID', 'JSON encoded host and dataset id',
 			string(/{"host":".*","name":".*"}/));
@@ -35,9 +35,9 @@ var Column = d(
 
 
 var Columns = d(
-	'Columns', 'A set of columns', object(
-		ColumnID, Column
-	));
+	'Columns', 'A set of columns', dict({
+		[ColumnID]: Column
+	}));
 
 //var Cohorts = d(
 //	'Cohorts', 'A set of cohorts', array.of(string())
@@ -130,7 +130,7 @@ var SampleID = d(
 var ColorSpec = d(
 	'ColorSpec', 'A color scale variant.',
 	or(
-		// XXX this syntax is more verbose than I like
+		// XXX the r syntax is more verbose than I like
 		['float-pos', r('low', number()), r('high', number()), r('min', number()), r('max', number())],
 		array('float-neg', r('low', number()), r('high', number()), r('min', number()), r('max', number())),
 		array('float', number(), number(), number(), number(), number()),
@@ -192,7 +192,7 @@ var Application = d(
 		cohorts: array.of(string()),
 		columnOrder: array.of(ColumnID),
 		columns: Columns,
-		data: object(
+		data: object.of(
 			ColumnID, or(ProbeData, MutationData)
 		),
 		datasets: {
@@ -204,9 +204,9 @@ var Application = d(
 				datasets: array.of(Dataset)
 			})
 		},
-		features: object(
-			dsID, Feature
-		),
+		features: {
+			[dsID]: Feature
+		},
 		km: {
 			vars: {
 				event: FeatureID,

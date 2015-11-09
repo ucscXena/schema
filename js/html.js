@@ -88,6 +88,13 @@ function object(toHTML, opts, ...props) {
                 objRow(toHTML, i === 0, i === props.length - 1, key, sch)));
 }
 
+function dict(toHTML, opts, [[, {title}, stringSchema], sch]) {
+	return table('obj', row(
+				td('obj-name', '{'),
+				td('obj-keys', `${title ? linkKey(title) : _.escape(stringKey(stringSchema))} :`),
+				td('obj-vals', `${toHTML(sch)}, ...}`)));
+}
+
 var or = (toHTML, opts, ...schs) => `<p class="inline-block">${_.map(schs, toHTML).join(' | ')}</p>`;
 
 var partialAll = (o, ...args) => _.mapObject(o, f => _.partial(f, ...args));
@@ -104,6 +111,7 @@ function toHTML(sch, top = []) {
 				'number': number,
 				'array': array,
 				'object': object,
+				'dict': dict,
 				'or': or,
 				'null': nullval,
 				'boolean': boolean
