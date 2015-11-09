@@ -53,14 +53,14 @@ describe('schema', function () {
 			assertSchemaEqual(or(number(5), string('foo')),
 				['or', {}, ['number', {}, ['value', 5]], ['string', {}, ['value', 'foo']]]); });
 	});
-	describe('#', function () {
+	describe('#object', function () {
 		it('should return an object schema', function () {
-			assertSchemaEqual(S({foo: number(5)}),
+			assertSchemaEqual(S.object({foo: number(5)}),
 				['object', {}, [['string', {}, ['value', 'foo']], ['number', {}, ['value', 5]]]]); });
 	});
-	describe('#', function () {
+	describe('#object', function () {
 		it('should return an object schema with pattern key', function () {
-			assertSchemaEqual(S({'/fo*/': number(5)}),
+			assertSchemaEqual(S.object({'/fo*/': number(5)}),
 				['object', {}, [['string', {}, ['pattern', /fo*/]], ['number', {}, ['value', 5]]]]); });
 	});
 	describe('#array', function () {

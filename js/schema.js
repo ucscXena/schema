@@ -37,7 +37,7 @@ function literals(value) {
 		return (value.length === 1) ? S.array.of(value[0]) : S.array(...value);
 	}
 	if (_.isObject(value) && !_.isArray(value) && !_.isFunction(value)) {
-		return Object.keys(value).length === 1 ? S.object.of(value) : S(value);
+		return Object.keys(value).length === 1 ? S.object.of(value) : S.object(value);
 	}
 	throw new Error(`Unknown schema value ${value}`);
 }
@@ -113,7 +113,7 @@ var objargs = (type, args) => args.length === 1 ?
 	[type, {}, ..._.map(args[0], key)] :
 	[type, {}, ...partitionN(args, 2).map(schs => schs.map(literals))];
 
-S = module.exports = (...args) => objargs('object', args);
+S = module.exports = literals;
 
 // merge, dropping undefined props
 var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), v => v !== undefined);
@@ -149,10 +149,10 @@ var methods = blessAll({
 	r: function (role, [type, opts, ...rest]) { // r for 'role'
 		return [type, {role: role, ...opts}, ...rest];
 	},
+	object: (...args) => objargs('object', args),
 	dict: (...args) => objargs('dict', args),
 	boolean: ['boolean', {}],
-	nullval: ['null', {}],
-	object: S
+	nullval: ['null', {}]
 });
 
 methods.array.of = blessFn(function (schema) {
