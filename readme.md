@@ -46,7 +46,7 @@ var circle = d('circle', 'A circle, with color',
 	})
 );
 
-// The same circle, as a variant.
+// The same circle, as a tuple.
 var circleV = d('circle', 'A circle, with color',
 	S([
 		r('x', number()),
