@@ -328,5 +328,5 @@ module.exports = {
 	Foo: d('foo', 'foo', object({
 		'/foo/': array.of(number())
 	})),
-	Bar: d('bar', 'bar', S([number(5)]))
+	Bar: d('bar', 'bar', S([number([5])]))
 };
