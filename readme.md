@@ -92,7 +92,7 @@ var id = number();
 var color = or('red', 'green');
 
 var tag = S([id, color]);
-```javascript
+```
 
 ### reference keys
 
