@@ -114,11 +114,13 @@ A schema used as a key must have a title (see ```d```, below).
 
 Strings can be declared as a fixed, regular expression, or arbitrary value.
 
-```string('foo')```
+```javascript
+string('foo');
 
-```string(/^b[a]+r$/)```
+string(/^b[a]+r$/);
 
-```string()``` 
+string();
+``` 
 
 A literal string in another schema object is interpreted as a fixed string. The following
 are equivalent.
@@ -139,13 +141,15 @@ S({
 
 Numbers can be declared as arbitary, or having a minimum, a minimum and maximum, or a fixed value.
 
-```number()```
+```javascript
+number()
 
-```number([0])```
+number([0])
 
-```number([100, 200])```
+number([100, 200])
 
-```number(12)```
+number(12)
+```
 
 A literal number is interpreted as a fixed number. The following are equivalent.
 
@@ -244,7 +248,7 @@ or(string(), number());
 
 ## other primitives
 
-```
+```javascript
 S({
 	foo: nullval,
 	bar: boolean
