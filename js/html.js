@@ -96,7 +96,13 @@ function dict(toHTML, opts, [[, {title}, stringSchema], sch]) {
 				td('obj-vals', `${toHTML(sch)}, ...}`)));
 }
 
-var or = (toHTML, opts, ...schs) => `<p class="inline-block">${_.map(schs, toHTML).join(' | ')}</p>`;
+var span = className => el => `<span class="${className}">${el}</span>`;
+
+var inlineSpan = span('inline-block');
+var nowrapSpan = span('nowrap');
+
+var or = (toHTML, opts, ...schs) =>
+	`<p class="inline-block">${_.map(schs, s => inlineSpan(toHTML(s))).join(' | ')}</p>`;
 
 var partialAll = (o, ...args) => _.mapObject(o, f => _.partial(f, ...args));
 
