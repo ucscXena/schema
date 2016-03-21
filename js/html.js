@@ -41,19 +41,20 @@ function number(toHTML, opts, nType) {
 	});
 }
 
-function role(toHTML, schema) {
+function annotation(toHTML, schema) {
 	// eslint is flagging role is as unused?? an eslint bug?
-	var [, {role}] = schema, //eslint-disable-line no-unused-vars
-		html = toHTML(schema);
-	return role ? `<span>${html} <label class='role'>${_.escape(role)}</label></span>` : html;
+	var [type, {role}, ref] = schema; //eslint-disable-line no-unused-vars
+	return type === 'annotation' ? `<span>${toHTML(ref)} <label class='role'>${_.escape(role)}</label></span>` : toHTML(schema);
 }
 
-function array(toHTML, opts, aType) {
-	var r = _.partial(role, toHTML);
-	return cases(aType, {
-		'tuple': (...schs) => `<span class="align-top">[</span>${_.map(schs, r).join(', ')}]`,
-		'list': (sch) => `<span class="align-top">[</span>${r(sch)}, ...]`
-	});
+function tuple(toHTML, opts, ...schs) {
+	var r = _.partial(annotation, toHTML);
+	return `<span class="align-top">[</span>${_.map(schs, r).join(', ')}]`;
+}
+
+function list(toHTML, opts, sch) {
+	var r = _.partial(annotation, toHTML);
+	return `<span class="align-top">[</span>${r(sch)}, ...]`;
 }
 
 function linkKey (id) {
@@ -109,12 +110,14 @@ function toHTML(sch, top = []) {
 			return cases(s, partialAll({
 				'string': string,
 				'number': number,
-				'array': array,
+				'tuple': tuple,
+				'list': list,
 				'object': object,
 				'dict': dict,
 				'or': or,
 				'null': nullval,
-				'boolean': boolean
+				'boolean': boolean,
+				'annotation': () => {throw new Error('annotation should only appear in collection types');}
 			}, render));
 		} else {
 			if (!title) {

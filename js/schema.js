@@ -34,10 +34,10 @@ function literals(value) {
 		return S.number(value);
 	}
 	if (_.isArray(value)) {
-		return (value.length === 1) ? S.array.of(value[0]) : S.array(...value);
+		return (value.length === 1) ? S.arrayOf(value[0]) : S.array(...value);
 	}
 	if (_.isObject(value) && !_.isArray(value) && !_.isFunction(value)) {
-		return Object.keys(value).length === 1 ? S.object.of(value) : S.object(value);
+		return Object.keys(value).length === 1 ? S.objectOf(value) : S.object(value);
 	}
 	throw new Error(`Unknown schema value ${value}`);
 }
@@ -51,7 +51,7 @@ function literals(value) {
 // unique id, we can then use the key to find the schema in the cache when
 // we are processing the key/value pairs of the object schema.
 //
-// Currently we only do this for schemas with a title, declared with d(). This
+// Currently we only do this for schemas with a title, declared with desc(). This
 // makes sense if we do not plan to in-line schemas for keys, but always link
 // to them instead. So all schemas used as keys should be top-level.
 
@@ -134,20 +134,24 @@ var methods = blessAll({
         return ['or', {}, ..._.map(schemas, literals)];
     },
     array: function (...schemas) {
-        return ['array', {}, ['tuple', ..._.map(schemas, literals)]];
+        return ['tuple', {}, ..._.map(schemas, literals)];
     },
-    d: function (...args) { // d for 'document'
+	arrayOf: function (schema) {
+		return ['list', {}, literals(schema)];
+	},
+    desc: function (...args) {
         if (args.length === 2) {
             args.unshift(undefined);
         }
-        var [title, description, [type, opts, ...rest]] = args;
+        var [title, description, schema] = args,
+			[type, opts, ...rest] = literals(schema);
         return refHandler(
 			[type,
 				m({title: title, description: description}, opts),
 				...rest]);
     },
-	r: function (role, [type, opts, ...rest]) { // r for 'role'
-		return [type, {role: role, ...opts}, ...rest];
+	role: function (role, [type, opts, ...rest]) {
+		return ['annotation', {role}, [type, opts, ...rest]];
 	},
 	object: (...args) => objargs('object', args),
 	dict: (...args) => objargs('dict', args),
@@ -155,10 +159,6 @@ var methods = blessAll({
 	nullval: ['null', {}]
 });
 
-methods.array.of = blessFn(function (schema) {
-	return ['array', {}, ['list', literals(schema)]];
-});
-
-methods.object.of = methods.dict;
+methods.objectOf = methods.dict;
 
 _.extend(S, methods);
