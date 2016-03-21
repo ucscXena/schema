@@ -85,10 +85,11 @@ var table = (className, ...children) => `<table class='${className}'><tbody>${ch
 var row = (...children) => `<tr>${children.join('')}</tr>`;
 var td = (className, children) => `<td class=${className}>${children}</td>`;
 function objRow(toHTML, first, last, [, {title}, stringSchema], sch) {
+	var r = _.partial(annotation, toHTML);
     return row(
             td('obj-name', first ? '{' : ''),
             td('obj-keys', `${title ? linkKey(title) : _.escape(stringKey(stringSchema))} :`),
-            td('obj-vals', toHTML(sch) + (last ? '}' : '')));
+            td('obj-vals', r(sch) + (last ? '}' : '')));
 }
 
 function object(toHTML, opts, ...props) {

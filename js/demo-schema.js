@@ -15,7 +15,7 @@ var ColumnID = desc(
 var Column = desc(
 	'Column', 'A column for display', {
 			dsID: dsID,
-	width: number([0]),
+	width: role('screen width', number([0])),
 	labelFormat: fn(string()).to(string()),
 	fieldFormat: fn(string()),
 	dataType: or(
