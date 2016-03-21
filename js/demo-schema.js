@@ -2,7 +2,7 @@
 /*eslint new-cap: [0] */
 'use strict';
 var S = require('./schema');
-var {desc, string, array, arrayOf, number, or, nullval, boolean, object, dict, role} = S;
+var {desc, fn, string, array, arrayOf, number, or, nullval, boolean, object, dict, role} = S;
 
 var dsID = desc('dsID', 'JSON encoded host and dataset id',
 			string(/{"host":".*","name":".*"}/));
@@ -16,6 +16,8 @@ var Column = desc(
 	'Column', 'A column for display', {
 			dsID: dsID,
 	width: number([0]),
+	labelFormat: fn(string()).to(string()),
+	fieldFormat: fn(string()),
 	dataType: or(
 		'mutationVector',
 		'geneMatrix',
@@ -32,7 +34,6 @@ var Column = desc(
 		user: string(),
 		default: string()
 	}});
-
 
 var Columns = desc(
 	'Columns', 'A set of columns', dict({

@@ -120,6 +120,12 @@ var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), v => v !== unde
 
 // how to represent 'required' (we really want to tag 'optional', not 'required')
 var methods = blessAll({
+	fn: function(...schemas) {
+		var s = ['function', {}, null, ..._.map(schemas, literals)];
+		// decorate with method for merging in the fn return schema.
+		return _.extend(s,
+			{to: blessFn(schema => [...s.slice(0, 2), schema, ...s.slice(3)])});
+	},
     string: function (value) {
         var val = _.isString(value) ? ['value', value] :
             (_.isRegExp(value) ? ['pattern', value] : []);

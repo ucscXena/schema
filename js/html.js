@@ -25,6 +25,13 @@ function string(toHTML, opts, sType) {
 	});
 }
 
+function fn(toHTML, opts, ...schs) {
+	var r = _.partial(annotation, toHTML),
+		[retSch, ...paramSchs] = schs,
+		ret = retSch === null ? '' : ` => ${r(retSch)}`;
+	return `<span>fn(${_.map(paramSchs, r).join(', ')}${ret})</span>`;
+}
+
 function minb(v) {
     return _.isUndefined(v) ? '-&infin;' : v;
 }
@@ -116,6 +123,7 @@ function toHTML(sch, top = []) {
 			return cases(s, partialAll({
 				'string': string,
 				'number': number,
+				'function': fn,
 				'tuple': tuple,
 				'list': list,
 				'object': object,
