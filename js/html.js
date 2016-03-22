@@ -2,9 +2,6 @@
 'use strict';
 var _ = require('underscore');
 
-// merge, dropping undefined props
-//var m = (...objs) => _.pick(_.extend.apply(null, [{}, ...objs]), (v, k) => v !== undefined);
-
 function cases([tag, ...data], c) {
 	return c[tag](...data);
 }

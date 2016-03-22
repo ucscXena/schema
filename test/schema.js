@@ -5,17 +5,8 @@
 var assert = require('assert');
 //var jsc = require('jsverify');
 var S = require('../js/schema');
-var {string, number, array, or, d} = S;
+var {string, number, array, arrayOf, or, desc} = S;
 var _ = require('underscore');
-
-function del(obj, props) {
-	props.forEach(p => {
-		if (obj.hasOwnProperty(p)) {
-			delete obj[p];
-		}
-	});
-	return obj;
-}
 
 function mapTree(t, fn) {
 	if (_.isArray(t)) {
@@ -28,7 +19,7 @@ function mapTree(t, fn) {
 // XXX Pretty ugly, but makes the asserts simpler. Could also write a custom deepEqual, but it might
 // get messy coding the schema vs. non-schema arrays.
 var schemaMagic = '_schema';
-var curse = schema => mapTree(schema, obj => { del(obj, [schemaMagic, 'toString']); return obj; });
+var curse = schema => mapTree(schema, obj => { _.omit(obj, [schemaMagic, 'toString']); return obj; });
 var assertSchemaEqual = (s, v) => assert.deepEqual(curse(s), v);
 
 describe('schema', function () {
@@ -64,28 +55,28 @@ describe('schema', function () {
 				['object', {}, [['string', {}, ['pattern', /fo*/]], ['number', {}, ['value', 5]]]]); });
 	});
 	describe('#array', function () {
-		it('should return a array schema', function () {
+		it('should return an array schema', function () {
 			assertSchemaEqual(array(number(5), string('foo')),
-				['array', {}, ['tuple',
-				['number', {}, ['value', 5]], ['string', {}, ['value', 'foo']]]]); });
+				['tuple', {},
+					['number', {}, ['value', 5]], ['string', {}, ['value', 'foo']]]); });
 	});
-	describe('#array.of', function () {
+	describe('#arrayOf', function () {
 		it('should return a array pattern schema', function () {
-			assertSchemaEqual(array.of(number()),
-				['array', {}, ['list',
-				['number', {}, []]]]); });
+			assertSchemaEqual(arrayOf(number()),
+				['list', {},
+					['number', {}, []]]); });
 	});
-	describe('#d', function () {
+	describe('#desc', function () {
 		it('should add doc string', function () {
 			assertSchemaEqual(
-				d('doc string', array(number(5), string('foo'))),
-				['array', {description: 'doc string'}, ['tuple',
-				['number', {}, ['value', 5]], ['string', {}, ['value', 'foo']]]]); });
+				desc('doc string', array(number(5), string('foo'))),
+				['tuple', {description: 'doc string'},
+					['number', {}, ['value', 5]], ['string', {}, ['value', 'foo']]]); });
 		it('should add doc and title string', function () {
 			assertSchemaEqual(
-				d('title string', 'doc string', array(number(5), string('foo'))),
-				['array', {title: 'title string', description: 'doc string'}, ['tuple',
-				['number', {}, ['value', 5]], ['string', {}, ['value', 'foo']]]]); });
+				desc('title string', 'doc string', array(number(5), string('foo'))),
+				['tuple', {title: 'title string', description: 'doc string'},
+					['number', {}, ['value', 5]], ['string', {}, ['value', 'foo']]]); });
 	});
 	describe('#', function () {
 		it('should allow literals', function () {

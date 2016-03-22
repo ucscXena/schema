@@ -4,6 +4,17 @@
 var _ = require('underscore');
 var S;
 
+// Schemas are represented as nested variants, in the
+// form [tag, options, ...params]. 'options' is a map
+// holding metadata about the schema, such as title and
+// description. Metadata that is part of the context,
+// such as role, or 'isOptional', is represented as an
+// 'annotation' tag. E.g.
+// ['annotation', {role: 'max'}, ['number', [0]]]
+// Annotations are only meaningful in the context of a composite
+// type, such as array, object, or function.
+
+
 // Schemas are represented as variants, using js arrays.  To allow using
 // literals as a shorthand for array schemas, we need to distinguish them from
 // the variants. Subclassing array in js is a mess, so instead use a hacky
